@@ -24,6 +24,13 @@ Calling out known issues can help limit users opening duplicate issues against y
 
 ## Release Notes
 
+### 0.0.2
+
+Add icon.
+
 ### 0.0.1
 
 Initial release of moonscript extension.
+
+## Attribution
+Icon: Moon by Lil Squid from the Noun Project

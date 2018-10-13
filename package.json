@@ -48,5 +48,6 @@
     "repository": {
         "type": "git",
         "url": "https://github.com/vgalaktionov/moonscript-vscode-extension.git"
-    }
+    },
+    "icon": "./logo.png"
 }
