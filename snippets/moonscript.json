@@ -1,0 +1,84 @@
+{
+    "Array Comprehension": {
+        "prefix": "forin",
+        "body": "for ${1:name} in ${2:array}",
+        "description": "An array comprehention loop. | See Moonscript Langauage Guide/Comprehensions."
+    },
+    "Function": {
+        "prefix": "fun",
+        "body": "${1:FunctionName} = $2 ->\n\t$0",
+        "description": "A function snippet. | See Moonscript Langauage Guide/Function Literals"
+    },
+    "Closure OOP": {
+        "prefix": "new",
+        "body": "${1:tableName}.new = $2 ->\n\t@ = {}\n\t$0\n\treturn @"
+    },
+    "Function(self)": {
+        "prefix": "funs",
+        "body": "${1:FunctionName} = $2 =>\n\t$0",
+        "description": "A function with an included `self` object, useful with classes. | See Moonscript Language Guide/Function Literals/Fat Arrow"
+    },
+    "Function Lambda": {
+        "prefix": "->",
+        "body": "${1:FunctionName} = $2 ->\n\t$0",
+        "description": "A lambda function | See Moonscript Language Guide/Function Literals"
+    },
+    "Function Lambda(self)": {
+        "prefix": "=>",
+        "body": "${1:FunctionName} = $2 =>\n\t$0"
+    },
+    "class ...": {
+        "prefix": "cla",
+        "body": "class ${1:ClassName}\n\t$0",
+        "description": "A class object - `class` | See Moonscript Language Guide/Object Oriented Programming"
+    },
+    "class ... extends ...": {
+        "prefix": "clax",
+        "body": "class ${1:ClassName} extends ${2:ParentClass}\n\t$0",
+        "description": "Class inheritance snippet - `extends` | See Moonscript Language Guide/Object Oriented Programming/Inheritance"
+    },
+    "if": {
+        "prefix": "if",
+        "body": "if ${1:condition}\n\t$0",
+        "description": "An if statement | if 1 > 2 do print 'Bigger'"
+    },
+    "elseif": {
+        "prefix": "elif",
+        "body": "elseif ${1:condition}\n\t$0",
+        "description": "Elseif follows a if statment, however note this cannot be inside the if statement. | elseif 2 < 4 do print('Smaller')"
+    },
+    "if .. else": {
+        "prefix": "ife",
+        "body": "if ${1:condition}\n\t$2\nelse\n\t$0",
+        "description": "A if and else statment | if 1 < 2 do print('Smaller') else do print('Nope')"
+    },
+    "for ... in pairs ...": {
+        "prefix": "forp",
+        "body": "for ${1:k}, ${2:v} in pairs ${3:table}\n\t$0",
+        "description": "A foor loop based on key value pairs | for ke,va in pairs table_a"
+    },
+    "for ... in ipairs ...": {
+        "prefix": "fori",
+        "body": "for ${1:i}, ${2:v} in ipairs ${3:table}\n\t$0",
+        "description": "A ipairs iteration `for` loop | for i, v in ipairs table_a"
+    },
+    "Switch": {
+        "prefix": "swi",
+        "body": "switch ${1:object}\n\twhen ${2:value}\n\t\t$0",
+        "description": "A switch/case function, it will target a group of values and let you use `case` to specifiy."
+    },
+    "Ternary if": {
+        "prefix": "ifte",
+        "body": "if ${1:condition} then ${2:value} else ${3:other}",
+        "description": "A ternary if, which means `if`(condition) `then`(value) `else`(any)"
+    },
+    "Unless": {
+        "prefix": "unl",
+        "body": "${1:action} unless ${2:condition}",
+        "description": "The opposite of an if statement, do unless 1 = 1 | See Moonscript Language Guide/Conditionals"
+    },
+    "Subheader": {
+        "prefix": "--",
+        "body": "----------------------------------\n-- $0\n----------------------------------"
+    }
+}

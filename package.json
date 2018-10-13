@@ -1,0 +1,48 @@
+{
+    "name": "moonscript",
+    "displayName": "MoonScript",
+    "description": "Working MoonScript support for vscode.",
+    "version": "0.0.1",
+    "publisher": "vgalaktionov",
+    "engines": {
+        "vscode": "^1.28.0"
+    },
+    "categories": [
+        "Programming Languages"
+    ],
+    "contributes": {
+        "languages": [
+            {
+                "id": "moonscript",
+                "aliases": [
+                    "MoonScript",
+                    "moonscript"
+                ],
+                "extensions": [
+                    ".moon"
+                ],
+                "configuration": "./language-configuration.json"
+            }
+        ],
+        "grammars": [
+            {
+                "language": "moonscript",
+                "scopeName": "source.moonscript",
+                "path": "./syntaxes/moonscript.json"
+            }
+        ],
+        "snippets": [
+            {
+                "language": "moonscript",
+                "path": "./snippets/moonscript.json"
+            }
+        ]
+    },
+    "main": "./src/extension.js",
+    "activationEvents": [
+        "onLanguage:moonscript"
+    ],
+    "dependencies": {
+        "vscode": "^1.1.21"
+    }
+}
