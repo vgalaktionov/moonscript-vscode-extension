@@ -2,7 +2,7 @@
     "name": "moonscript",
     "displayName": "MoonScript",
     "description": "Working MoonScript support for vscode.",
-    "version": "0.0.2",
+    "version": "0.1.0",
     "publisher": "vgalaktionov",
     "engines": {
         "vscode": "^1.28.0"
