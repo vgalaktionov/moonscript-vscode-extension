@@ -22,6 +22,10 @@ $ luarocks install moonpick
 
 ## Release Notes
 
+### 0.1.1
+
+Added option to enable or disable linting
+
 ### 0.1.0
 
 Implement indentation and other language config.

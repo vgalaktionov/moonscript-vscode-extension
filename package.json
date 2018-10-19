@@ -2,7 +2,7 @@
     "name": "moonscript",
     "displayName": "MoonScript",
     "description": "Working MoonScript support for vscode.",
-    "version": "0.1.0",
+    "version": "0.1.1",
     "publisher": "vgalaktionov",
     "engines": {
         "vscode": "^1.28.0"
@@ -11,6 +11,16 @@
         "Programming Languages"
     ],
     "contributes": {
+        "configuration": {
+            "title": "Moonscript configuration",
+            "properties": {
+                "moonscript.enableLinting": {
+                    "type": "boolean",
+                    "default": true,
+                    "description": "enable or disable linting"
+                }
+            }
+        },
         "languages": [
             {
                 "id": "moonscript",
@@ -42,7 +52,7 @@
     "activationEvents": [
         "onLanguage:moonscript"
     ],
-    "dependencies": {
+    "devDependencies": {
         "vscode": "^1.1.21"
     },
     "repository": {
