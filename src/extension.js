@@ -1,18 +1,22 @@
 // The module 'vscode' contains the VS Code extensibility API
 // Import the module and reference it with the alias vscode in your code below
 
+"use strict";
+
 const vscode = require("vscode")
 const { exec } = require("child_process")
 
-let diagnosticCollection
-// this method is called when your extension is activated
-// your extension is activated the very first time the command is executed
+// Whether to lint or not
+let doLint = false
+
+let diagnosticCollection = vscode.languages.createDiagnosticCollection("moonscript")
+
+// Extension starting point
 function activate(context) {
-  vscode.workspace.onDidChangeTextDocument(changeEvent => {
-    const doc = changeEvent.document
-    if (doc.languageId === "moonscript") {
-      lintFile(doc)
-    }
+  checkSettings()
+
+  vscode.workspace.onDidChangeConfiguration(configEvent => {
+    checkSettings()
   })
 
   vscode.workspace.onDidOpenTextDocument(doc => {
@@ -21,13 +25,25 @@ function activate(context) {
     }
   })
 
-  diagnosticCollection = vscode.languages.createDiagnosticCollection(
-    "moonscript"
-  )
+  vscode.workspace.onDidSaveTextDocument(doc => {
+    if (doc.languageId === "moonscript") {
+      lintFile(doc)
+    }
+  })
+
   context.subscriptions.push(diagnosticCollection)
 }
 
+function checkSettings() {
+  doLint = vscode.workspace.getConfiguration().get("moonscript.enableLinting") === true
+}
+
 function lintFile(doc) {
+  if (!doLint) {
+    diagnosticCollection.clear()
+    return;
+  }
+
   exec(`moonpick ${doc.uri.fsPath}`, (err, stdout, stderr) => {
     if (stderr) {
       console.error(stderr)
@@ -37,7 +53,7 @@ function lintFile(doc) {
       const rawErrors = parseMoonpickOutput(stdout)
       diagnosticCollection.set(doc.uri, getDiagnostics(rawErrors, doc))
     } else {
-      diagnosticCollection.set(doc.uri, [])
+      diagnosticCollection.clear()
     }
   })
 }
