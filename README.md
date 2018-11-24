@@ -4,14 +4,15 @@ As the other moonscript extensions seem abandoned, here's one that works.
 
 ## Features
 
-* Syntax highlighting
-* Indentation
-* Snippets
-* Linting
+- Syntax highlighting
+- Indentation
+- Snippets
+- Linting
 
 ## Requirements
 
 Linting requires moonpick to work:
+
 ```bash
 $ luarocks install moonpick
 ```
@@ -38,5 +39,10 @@ Add icon.
 
 Initial release of moonscript extension.
 
+## Contributors
+
+Thanks to [Bawwby](https://github.com/Bawbby) for contributing improvements!
+
 ## Attribution
+
 Icon: Moon by Lil Squid from the Noun Project
