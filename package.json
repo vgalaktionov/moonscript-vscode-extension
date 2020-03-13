@@ -18,6 +18,11 @@
                     "type": "boolean",
                     "default": true,
                     "description": "enable or disable linting"
+                },
+                "moonscript.moonpickPath": {
+                    "type": "string",
+                    "default": "moonpick",
+                    "description": "Path to the moonpick executable"
                 }
             }
         },
@@ -59,5 +64,8 @@
         "type": "git",
         "url": "https://github.com/vgalaktionov/moonscript-vscode-extension.git"
     },
-    "icon": "logo.png"
+    "icon": "logo.png",
+    "dependencies": {
+        "execa": "^4.0.0"
+    }
 }
