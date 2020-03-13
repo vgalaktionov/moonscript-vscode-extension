@@ -1,92 +1,101 @@
 // The module 'vscode' contains the VS Code extensibility API
 // Import the module and reference it with the alias vscode in your code below
 
-"use strict";
+'use strict';
 
-const vscode = require("vscode")
-const { exec } = require("child_process")
+const { workspace, languages, Diagnostic, Position, Range } = require('vscode')
+const execa = require('execa')
 
 // Whether to lint or not
-let doLint = false
+let lintEnabled = false
+// Path to the moonpick executable
+let moonpickPath = 'moonpick'
 
-let diagnosticCollection = vscode.languages.createDiagnosticCollection("moonscript")
+let diagnosticCollection = languages.createDiagnosticCollection('moonscript')
 
 // Extension starting point
 function activate(context) {
   checkSettings()
 
-  vscode.workspace.onDidChangeConfiguration(configEvent => {
-    checkSettings()
-  })
-
-  vscode.workspace.onDidOpenTextDocument(doc => {
-    if (doc.languageId === "moonscript") {
-      lintFile(doc)
-    }
-  })
-
-  vscode.workspace.onDidSaveTextDocument(doc => {
-    if (doc.languageId === "moonscript") {
-      lintFile(doc)
-    }
-  })
+  workspace.onDidChangeConfiguration(checkSettings)
+  workspace.onDidOpenTextDocument(lintFile)
+  workspace.onDidSaveTextDocument(lintFile)
 
   context.subscriptions.push(diagnosticCollection)
 }
 
 function checkSettings() {
-  doLint = vscode.workspace.getConfiguration().get("moonscript.enableLinting") === true
+  const config = workspace.getConfiguration()
+  lintEnabled = config.get('moonscript.enableLinting') === true
+  const customPath = config.get('moonscript.moonpickPath')
+  if (customPath) {
+    moonpickPath = customPath
+  }
+}
+
+function clearErrors() {
+  diagnosticCollection.clear()
 }
 
 function lintFile(doc) {
-  if (!doLint) {
-    diagnosticCollection.clear()
+  if (!lintEnabled || doc.languageId !== 'moonscript') {
+    clearErrors()
     return;
   }
 
-  exec(`moonpick ${doc.uri.fsPath}`, (err, stdout, stderr) => {
-    if (stderr) {
-      console.error(stderr)
-      return
-    }
-    if (err) {
-      const rawErrors = parseMoonpickOutput(stdout)
-      diagnosticCollection.set(doc.uri, getDiagnostics(rawErrors, doc))
+  execa(moonpickPath, [doc.uri.fsPath])
+    .then(clearErrors)
+    .catch(({ stdout, stderr }) => {
+      if (stderr) {
+        console.error(stderr)
+      } else {
+        const diagnosticErrors = moonpickOutputToDiagnostics(stdout, doc)
+        diagnosticCollection.set(doc.uri, diagnosticErrors)
+      }
+    })
+}
+
+function moonpickErrorToDiagnostic(moonpickError, doc) {
+  const {
+    errorLineNumber,
+    errorSnippet,
+    errorDescription
+  } = moonpickError
+  const lineIndex = parseInt(errorLineNumber) - 1
+  if (lineIndex < 0) {
+    return null
+  }
+  const linePosition = new Position(lineIndex, 0)
+  if (!doc.validatePosition(linePosition)) {
+    return null
+  }
+  const line = doc.lineAt(linePosition)
+  const errorStartCharIndex = line.text.indexOf(errorSnippet)
+  if (errorStartCharIndex < 0) {
+    return null
+  }
+  const errorStartPosition = linePosition.translate({ characterDelta: errorStartCharIndex })
+  const errorStopPosition = errorStartPosition.translate({ characterDelta: errorSnippet.length })
+  const errorRange = new Range(errorStartPosition, errorStopPosition)
+  if (!line.range.contains(errorRange)) {
+    return null
+  }
+  return new Diagnostic(errorRange, errorDescription)
+}
+
+function moonpickOutputToDiagnostics(stdout, doc) {
+  const errorRegex = /^\s*line\s+(?<errorLineNumber>\d+)\s*:\s*(?<errorDescription>.+)\n\s*=+\s*\n\s*>\s*(?<errorSnippet>.+)\n/gm
+  let match = null
+  const diagnosticArray = []
+  while (match = errorRegex.exec(stdout)) {
+    const diagnostic = moonpickErrorToDiagnostic(match.groups, doc)
+    if (diagnostic) {
+      diagnosticArray.push(diagnostic)
     } else {
-      diagnosticCollection.clear()
+      console.warn('Unable to parse moonpick line into diagnostic', match)
     }
-  })
-}
-
-function getDiagnostics(rawErrors, doc) {
-  const diagnostics = []
-  for (let i = 0; i < rawErrors.length; i += 2) {
-    const lineNo = parseInt(rawErrors[i]) - 1
-    const description = rawErrors[i + 1]
-    const line = doc.lineAt(lineNo)
-    let colStart = line.range.start.character
-    let colEnd = line.range.end.character
-    const problemStrMatch = description.match(/`(.*)`/)
-    if (problemStrMatch) {
-      const problemStr = problemStrMatch[1]
-      colStart = line.text.indexOf(problemStr)
-      colEnd = colStart + problemStr.length
-    }
-    const range = new vscode.Range(lineNo, colStart, lineNo, colEnd)
-    diagnostics.push(new vscode.Diagnostic(range, description))
   }
-  return diagnostics
-}
-
-function parseMoonpickOutput(stdout) {
-  const errorRegex = /line\s+(\d+):\s(.*)\n/gm
-  let rawErrors = []
-  let match = errorRegex.exec(stdout)
-  while (match) {
-    rawErrors = rawErrors.concat(match.slice(1))
-    match = errorRegex.exec(stdout)
-  }
-  return rawErrors
+  return diagnosticArray
 }
 
 module.exports = {
