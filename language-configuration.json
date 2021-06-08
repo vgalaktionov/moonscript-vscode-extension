@@ -24,5 +24,8 @@
   "indentationRules": {
     "increaseIndentPattern": "^(.*\\bclass|.*\\b(for|while|with)\\b(?!.*?do)|.*\\b(if|elseif|when)\\b(?!.*?then)|.*\\belse\\s*$|.*switch|.*[-=]>\\s*$|.*[\\{\\[]$)",
     "decreaseIndentPattern": "^\\s*(\\}|\\]|(else|elseif)\\b)"
-}
+  },
+  "folding": {
+    "offSide": true
+  }
 }
